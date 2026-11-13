@@ -1,0 +1,30 @@
+name: Android Build
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Generate random icon
+        run: python3 scripts/gen_icon.py
+      - name: Throwaway keystore
+        run: >
+          keytool -genkeypair -keystore "$RUNNER_TEMP/throwaway.jks"
+          -storepass testpass123 -keypass testpass123
+          -alias test -keyalg RSA -keysize 2048 -validity 30
+          -dname "CN=Throwaway"
+      - name: Build signed release APK
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/throwaway.jks
+        run: gradle assembleRelease --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: app/build/outputs/apk/release/*.apk

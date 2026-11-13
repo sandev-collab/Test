@@ -10,7 +10,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TextView tv = new TextView(this);
-        tv.setText("Hello from the test build!");
+        tv.setText("Hello from the test build!")
         tv.setTextSize(22);
         tv.setGravity(Gravity.CENTER);
         setContentView(tv);
